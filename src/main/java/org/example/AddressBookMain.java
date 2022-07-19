@@ -17,7 +17,7 @@ public class AddressBookMain{
                     "4.Delete contacts\t" +
                     "5.View contact with city name\t" +
                     "6.View contact with state name\t" +
-                    "7.View the contacts in sorted order" +
+                    "7.View the contacts in sorted order\t" +
                     "8.Display the contacts sorted by City,State or zip");
             Scanner scanner = new Scanner(System.in);
             int input = scanner.nextInt();

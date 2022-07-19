@@ -15,35 +15,34 @@ public class AddressBookFunctions {
     public static HashMap<String,String> cityDictionary = new HashMap<>();
     public static HashMap<String,String> stateDictionary = new HashMap<>();
 
+    public static ArrayList<AddressBook> findAddressBook(String name){
+        for (Map.Entry<String,ArrayList<AddressBook>> itr: hashMapOfAddressBook.entrySet()){
+            if (itr.getKey().equals(name)){
+                return itr.getValue();
+            }
+        }
+        return null;
+    }
+
     public static void addContact(String bookName){
         System.out.print("First name: ");
         firstName = obj.next();
-        AddressBook.setFirstName(firstName);
 
         System.out.print("Last name: ");
         lastName = obj.next();
-        AddressBook.setLastName(lastName);
+
         if (AddressBookFunctions.checkDuplicate(bookName,firstName,lastName)) {
 
             System.out.print("City: ");
             city = obj.next();
-            AddressBook.setCity(city);
-
             System.out.print("State: ");
             state = obj.next();
-            AddressBook.setState(state);
-
             System.out.print("Zip: ");
             zip = obj.nextInt();
-            AddressBook.setZip(zip);
-
             System.out.print("E-mail: ");
             mail = obj.next();
-            AddressBook.setMail(mail);
-
             System.out.print("Phone number: ");
             phone = obj.nextLong();
-            AddressBook.setPhone(phone);
 
             AddressBook addressBook = new AddressBook(firstName, lastName, city, state, zip, phone, mail);
             cityDictionary.put(firstName+" "+lastName,city);
@@ -74,42 +73,110 @@ public class AddressBookFunctions {
         }
     }
 
+    public static void displayByOrder() {
+        System.out.println(" Please enter the name of the address book: ");
+        String name = obj.next();
+        if(hashMapOfAddressBook.get(name).isEmpty())
+        {
+            System.out.println("The Address Book is empty.");
+            return;
+        }
+        hashMapOfAddressBook.get(name).stream().sorted((contact1, contact2) -> contact1.getFirstName().compareToIgnoreCase(contact2.getFirstName()))
+                .forEach(contact -> System.out.println(contact));
+        try {
+            System.out.println("Data inserted in file is:");
+            AddressBookIO.readFromFile();
+        }
+        catch (IOException e){
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void editContact() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter the first name to edit contact details.");
-        String name = scanner.next();
-        if (name.equals(firstName)){
-            System.out.println("New First Name:");
-            firstName = scanner.next();
-            System.out.println("New Last Name:");
-            lastName = scanner.next();
-            System.out.println("New City:");
-            city = scanner.next();
-            System.out.println("New State:");
-            state = scanner.next();
-            System.out.println("New Zip:");
-            zip = scanner.nextInt();
-            System.out.println("New Phone:");
-            phone = scanner.nextLong();
-            System.out.println("New E-mail:");
-            mail = scanner.next();
+        byte i = 1;
+        do {
+            System.out.println("Enter Addressbook name: ");
+            String editAddressbookName = scanner.next();
+            ArrayList<AddressBook> arrayList = findAddressBook(editAddressbookName);
+            if (arrayList == null)
+                System.out.println("Address book not found.");
+            else if (arrayList.isEmpty())
+                System.out.println("The book with " + editAddressbookName + " is empty.");
+            int index =  findContact(arrayList);
+            if(index == -1)
+            {
+                System.out.println("Details with this name is not found");
+                return;
+            }
+            else {
+                System.out.println("Found addressbook.");
+                System.out.println("Enter the first name to edit contact details.");
+                String name = scanner.next();
+                if (name.equals(firstName)) {
+                    System.out.println("Which field you want to edit? Choose from below-");
+                    System.out.println("1 -> First name\t" + "2 -> Last name\t" + "3 -> City\t" + "4 -> State\t" + "5 -> Zip\t" +
+                            "6 -> Phone\t" + "7 -> E-mail");
+                    byte a = scanner.nextByte();
+                    switch (a) {
+                        case 1:
+                            System.out.println("New First Name:");
+                            firstName = scanner.next();
+                            break;
+                        case 2:
+                            System.out.println("New Last Name:");
+                            lastName = scanner.next();
+                            break;
+                        case 3:
+                            System.out.println("New City:");
+                            city = scanner.next();
+                            break;
+                        case 4:
+                            System.out.println("New State:");
+                            state = scanner.next();
+                            break;
+                        case 5:
+                            System.out.println("New Zip:");
+                            zip = scanner.nextInt();
+                            break;
+                        case 6:
+                            System.out.println("New Phone:");
+                            phone = scanner.nextLong();
+                            break;
+                        case 7:
+                            System.out.println("New E-mail:");
+                            mail = scanner.next();
+                            break;
+                    }
+                    System.out.println("Do you want to edit more? then press 1 or exit with any key.");
+                    i = scanner.nextByte();
+                }
+            }
         }
+        while (i == 1) ;
     }
 
     public static void deleteContact(ArrayList<AddressBook> Contacts){
-        System.out.println("Enter the first name to delete contact");
-        Scanner scanner = new Scanner(System.in);
-        String name = scanner.next();
-        if (name.equals(firstName)){
-            Contacts.clear();
-            System.out.println("Deletion completed.");
-        } else {
-            System.out.println("Wrong name input.");
+        System.out.println("Enter the address book name:");
+        String AddressBookName = obj.next();
+        ArrayList<AddressBook> arrayList = findAddressBook(AddressBookName);
+        if (arrayList == null){
+            System.out.println("AddressBook not found.");
         }
+        if (arrayList.isEmpty()) {
+            System.out.println("Address book with name " + AddressBookName + " is empty");
+        }
+        int index =  findContact(arrayList);
+        if(index == -1)
+        {
+            System.out.println("Details with this name is not found");
+        }
+        System.out.println("AddressBook deleted.");
+        arrayList.remove(index);
     }
 
     public static void addAddressBook(){
-        System.out.println("Enter addressbook name:");
+        System.out.println("Enter Address book name:");
         String addressBookName = obj.next();
         if (findAddressBook(addressBookName)!=null){
             System.out.println("Already exists.");
@@ -117,26 +184,36 @@ public class AddressBookFunctions {
         }
         System.out.println( addressBookName);
     }
-
-    public static ArrayList<AddressBook> findAddressBook(String name){
-        for (Map.Entry<String,ArrayList<AddressBook>> itr: hashMapOfAddressBook.entrySet()){
-            if (itr.getKey().equals(name)){
-                return itr.getValue();
+    public static int findContact(ArrayList<AddressBook> arrayList){
+        System.out.println("Enter the name: ");
+        String findName = obj.next();
+        for (AddressBook data: arrayList) {
+            if (findName.compareToIgnoreCase(data.getFirstName())==0){
+                return arrayList.indexOf(data);
             }
         }
-        return null;
+        return -1;
     }
+
 
     public static boolean checkDuplicate(String book_name, String first_name, String last_name){
         int f = 0;
         if (hashMapOfAddressBook.get(book_name)==null)
             return true;
         ArrayList<AddressBook> arrayList = hashMapOfAddressBook.get(book_name);
+        HashMap<String,String> names = new HashMap<>();
         for (AddressBook data : arrayList) {
-            if (data.getFirstName().equals(first_name) && data.getLastName().equals(last_name))
-                return false;
+            names.put(data.getFirstName(),data.getLastName());
         }
-        return true;
+        ICheckDuplicate checkDuplicate = ((f_name, l_name) -> {
+            if(f_name.equals(first_name) && l_name.equals(last_name)){
+                return false;
+            }
+            return true;
+        });
+        Boolean ansToDuplicates = names.entrySet().stream()
+                .anyMatch(n->checkDuplicate.checkDuplicate(n.getKey(),n.getValue()));
+        return ansToDuplicates;
     }
     public static void sameCity(String city){
         byte count = 0;
