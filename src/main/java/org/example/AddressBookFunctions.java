@@ -156,7 +156,7 @@ public class AddressBookFunctions {
         while (i == 1) ;
     }
 
-    public static void deleteContact(ArrayList<AddressBook> Contacts){
+    public static void deleteContact(){
         System.out.println("Enter the address book name:");
         String AddressBookName = obj.next();
         ArrayList<AddressBook> arrayList = findAddressBook(AddressBookName);

@@ -38,7 +38,7 @@ public class AddressBookMain{
                     AddressBookFunctions.editContact();
                     break;
                 case 4:
-                    AddressBookFunctions.deleteContact((ArrayList<AddressBook>) Contacts);
+                    AddressBookFunctions.deleteContact();
                     break;
                 case 5:
                     System.out.println("Enter city:");
